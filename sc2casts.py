@@ -167,8 +167,8 @@ class SC2Casts:
                    .findall(link))
         roundname = (re.compile('<span class="round_name">(.*?)</span>')
                      .findall(link))
-        checkSource = (re.compile('<span class="source_name">(.*?)</span>')
-                       .findall(link))
+        checkSource = (re.compile('<div class="latest_series" ?>'
+                       '<img src=".+?title="(.+?)"').findall(link))
         event = (re.compile('<span class="event_name".*?>(.*?)</span>')
                  .findall(link))
 
@@ -182,7 +182,7 @@ class SC2Casts:
                                '(.+?)</b> \((.*?)\)</a>').findall(link)
 
         for i in range(len(event)):
-            if checkSource[i] != '@ YouTube':
+            if checkSource[i] != 'on YouTube':
                 pass
             else:
                 url = ''
