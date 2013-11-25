@@ -1,3 +1,8 @@
+v0.4.8
+----------------------
+- Work with the new source format of sc2casts page
+- Single game youtube videos should work now as well
+
 v0.4.7
 ----------------------
 - Fix for new 'embed' Youtube link
