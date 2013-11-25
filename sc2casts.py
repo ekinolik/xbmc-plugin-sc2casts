@@ -130,8 +130,12 @@ class SC2Casts:
     def addVideo(self, title, url):
         # Check if URL is a 'fillUp' URL
         if url != 'fillUp':
-            url = ('%s/?action=play_video&videoid=%s'
-                    %(self.VIDEO_PLUGIN_URL, url))
+            if "?id=" in url:
+                url = 'http://sc2casts.com/twitch/embed?id=480596881&t=8h47m28s'
+            else:
+                url = ('%s/?action=play_video&videoid=%s'
+                        %(self.VIDEO_PLUGIN_URL, url))
+
         liz=xbmcgui.ListItem(title, iconImage='DefaultVideo.png',
                              thumbnailImage='DefaultVideo.png')
         liz.setInfo(type='Video', infoLabels={ 'Title': title })
@@ -182,25 +186,31 @@ class SC2Casts:
                                '(.+?)</b> \((.*?)\)</a>').findall(link)
 
         for i in range(len(event)):
-            if checkSource[i] != 'on YouTube':
-                pass
+            if checkSource[i] == 'on YouTube':
+                source = 'youtube'
+            elif checkSource[i] == 'on Twitch.tv':
+                source = 'twitchtv'
             else:
-                url = ''
-                if boolMatchup == 'true':
-                    url += matchup[i] + ' | '
+                continue
 
-                url += title[i][1] + ' vs ' + title[i][2] + ' | '
+            url = ''
+            if boolMatchup == 'true':
+                url += matchup[i] + ' | '
 
-                if boolNr_games == 'true':
-                    url += title[i][3] + ' | '
-                if boolEvent == 'true':
-                    url += event[i] + ' | '
-                if boolRound == 'true':
-                    url += roundname[i] + ' | '
-                if boolCaster == 'true':
-                    url += 'cast by: ' + caster[i]
+            url += title[i][1] + ' vs ' + title[i][2] + ' | '
 
-                self.addCategory(url,title[i][0],'showGames')
+            if boolNr_games == 'true':
+                url += title[i][3] + ' | '
+            if boolEvent == 'true':
+                url += event[i] + ' | '
+            if boolRound == 'true':
+                url += roundname[i] + ' | '
+            if boolCaster == 'true':
+                url += 'cast by: ' + caster[i]
+
+            url += ' | ' + source
+
+            self.addCategory(url,title[i][0],'showGames')
 
     def showGames(self, params = {}):
         get = params.get
@@ -222,8 +232,16 @@ class SC2Casts:
                                       str(k + 1),
                                       videoContent[k])
         else:
-            videoContent=re.compile('src="https://www.youtube.com/embed'
-                                    '/(.+?)"').findall(link)
+            if 'youtube' in get('title'):
+                videoContent=re.compile('src="https://www.youtube.com/embed'
+                                        '/(.+?)"').findall(link)
+            elif 'twitchtv' in get('title'):
+                videoContent=(re.compile('<iframe id="twitchplayer".+?'
+                    'src="http://sc2casts.com/twitch/embed(.+?)"')
+                    .findall(link))
+            else:
+               return
+
             if len(videoContent) > 1:
                 for n in range(len(videoContent)):
                     self.addVideo('Game 1, part '+ str(n+1), videoContent[n])
