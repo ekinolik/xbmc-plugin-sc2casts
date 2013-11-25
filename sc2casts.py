@@ -222,10 +222,8 @@ class SC2Casts:
                                       str(k + 1),
                                       videoContent[k])
         else:
-            videoContent=(re.compile('<param name="movie" '
-                                     'value="%s/v/(.+?)'
-                                     '\?.+?"></param>' % self.VIDEO_URL)
-                          .findall(link))
+            videoContent=re.compile('src="https://www.youtube.com/embed'
+                                    '/(.+?)"').findall(link)
             if len(videoContent) > 1:
                 for n in range(len(videoContent)):
                     self.addVideo('Game 1, part '+ str(n+1), videoContent[n])
